@@ -43,6 +43,23 @@ class Eva{
             return this.eval(exp[1], env) * this.eval(exp[2], env);
         }
 
+        if (exp[0] === '>'){
+            return this.eval(exp[1], env) > this.eval(exp[2], env);
+        }
+        if (exp[0] === '<'){
+            return this.eval(exp[1], env) < this.eval(exp[2], env);
+        }
+        if (exp [0] === '>='){
+            return this.eval(exp[1], env) >= this.eval(exp[2], env);
+        }
+        if (exp[0] === '<='){
+            return this.eval(exp[1], env) <= this.eval(exp[2], env);
+        }
+
+        if (exp[0] === '='){
+            return this.eval(exp[1], env) === this.eval(exp[2], env);
+        }
+
         //----------------------------------
         //Block: sequence of expressions
         if(exp[0] === 'begin'){
@@ -65,6 +82,24 @@ class Eva{
 
         if (isVariableName(exp)){
             return env.lookup(exp);
+        }
+
+        if(exp[0] === 'if'){
+            const [_,condition,consequent,alternate] = exp;
+            if(this.eval(condition,env)){
+                return this.eval(consequent,env);
+            }else{
+                return this.eval(alternate,env);
+            }   
+        }
+
+        if(exp[0] === 'while'){
+            const[_tag,condition,body] = exp;
+            let result;
+            while(this.eval(condition,env)){
+                result = this.eval(body,env);
+            }
+            return result;
         }
 
         
@@ -101,85 +136,9 @@ function isVariableName(exp){
 }
 
 
-// Test
-
-const eva = new Eva(new Environment({
-
-    null: null,
-    true: true,
-    false: false,
-
-    VERSION: '0.1',
-
-}));
-
-assert.strictEqual(eva.eval(1),1);
-assert.strictEqual(eva.eval('"hello"'), 'hello')
-
-assert.strictEqual(eva.eval(['+',1,5]),6);
-assert.strictEqual(eva.eval(['*',1,5]),5);
-assert.strictEqual(eva.eval(['/',5,5]),1);
-assert.strictEqual(eva.eval(['-',6,5]),1);
-assert.strictEqual(eva.eval(['var', 'x', 10]),10);
-assert.strictEqual(eva.eval(['var', 'y', 100]),100);
-assert.strictEqual(eva.eval('y'),100);
-assert.strictEqual(eva.eval('VERSION'),'0.1');
-assert.strictEqual(eva.eval(['var','isUser', 'true']), true);
-
-//Blocks
-assert.strictEqual(eva.eval(
-    ['begin',
-
-        ['var', 'x', 10],
-        ['var', 'y', 20],
-
-        ['+', ['*', 'x', 'y'], 30],
-
-    ]),
-
-230);
-
-assert.strictEqual(eva.eval(
-    ['begin',
-        ['var', 'x', 10],
-        ['begin',
-            ['var', 'x', 20],
-            'x'
-        ],
-        'x'
-    ]),
-    
-    
-10);
-
-//Nested blocks is not working if you comment it out the code works
-assert.strictEqual(eva.eval(
-    ['begin',
-        ['var', 'value', 10],
-        ['var', 'result' ,['begin',
-            ['var', 'x', ['+', 'value', 10]],
-            'x'
-        ]],
-        'result'
-    ]),
-    
-    
-20);
 
 
-assert.strictEqual(eva.eval(
-    ['begin',
-    ['var', 'data', 10],
-    ['begin',
-        ['set', 'data', 1000],
-    ],
-    'data'
-    ]),
-1000);
+module.exports = Eva;
 
 
 
-
-
-
-console.log('All assertion passed');
