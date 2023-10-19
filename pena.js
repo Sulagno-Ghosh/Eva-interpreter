@@ -56,6 +56,13 @@ class Eva{
             return env.define(name,this.eval(value,env));
         }
 
+        if (exp[0] === 'set'){
+            const [_, name, value] = exp;
+            return env.assign(name,this.eval(value,env));
+        }
+
+
+
         if (isVariableName(exp)){
             return env.lookup(exp);
         }
@@ -159,6 +166,16 @@ assert.strictEqual(eva.eval(
     
 20);
 
+
+assert.strictEqual(eva.eval(
+    ['begin',
+    ['var', 'data', 10],
+    ['begin',
+        ['set', 'data', 1000],
+    ],
+    'data'
+    ]),
+1000);
 
 
 

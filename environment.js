@@ -14,6 +14,11 @@ class Environment{
        return this.resolve(name).record[name];
     }
 
+    assign(name,value){
+        this.resolve(name).record[name] = value;
+        return value;
+    }
+
     //the resolve method doesn't seem to have a problem
     resolve(name){
         if(this.record.hasOwnProperty(name)){
@@ -24,6 +29,7 @@ class Environment{
         }
         return this.parent.resolve(name);
     }
+
 }
 
 module.exports = Environment;
