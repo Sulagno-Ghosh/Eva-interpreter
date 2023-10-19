@@ -53,7 +53,7 @@ class Eva{
         //Variable declaration:
         if (exp[0] === 'var'){
             const [_, name, value] = exp;
-            return env.define(name,this.eval(value));
+            return env.define(name,this.eval(value,env));
         }
 
         if (isVariableName(exp)){
